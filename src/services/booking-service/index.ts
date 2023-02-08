@@ -1,17 +1,12 @@
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
 import { notFoundError } from "@/errors";
-import { cannotListHotelsError } from "@/errors/cannot-list-hotels-error";
 import bookingRepository from "@/repositories/booking-repository";
 import { cannotBookingError } from "@/errors/cannot-booking-error";
 
 async function getBookingService(userId: number) {
 
-    const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-    
-    if (!enrollment) {
-        throw notFoundError();
-    }
+    await validateEnrollment(userId);
 
     const bookingExists = await validateBookingExistence(userId);   
 
@@ -22,7 +17,7 @@ async function getBookingService(userId: number) {
 async function postBookingService(userId: number, roomId: number) {
 
     await validateTicket(userId);
-    await validateRoomExistenceAndCapacity(roomId);
+    // await validateRoomExistenceAndCapacity(roomId);
 
     const booking = await bookingRepository.createBooking(userId, roomId);
 
@@ -31,9 +26,9 @@ async function postBookingService(userId: number, roomId: number) {
 
 async function putBookingService(userId: number, bookingId: number, roomId: number) {
 
-    await validateBookingExistence(userId);   
     await validateTicket(userId);
-    await validateRoomExistenceAndCapacity(roomId);
+    await validateBookingExistence(userId);   
+    // await validateRoomExistenceAndCapacity(roomId);
 
     const booking = await bookingRepository.updateBooking(bookingId, roomId);
 
@@ -41,18 +36,25 @@ async function putBookingService(userId: number, bookingId: number, roomId: numb
 
 }
 
-async function validateTicket(userId: number){
-
+async function validateEnrollment(userId: number) {
+    
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
     
     if (!enrollment) {
-        throw notFoundError();
+        throw cannotBookingError();
     }
+
+    return enrollment;
+}
+
+async function validateTicket(userId: number){
+
+    const enrollment = await validateEnrollment(userId);
 
     const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
 
     if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
-        throw cannotListHotelsError();
+        throw cannotBookingError();
     }
 
 }
@@ -62,7 +64,7 @@ async function validateBookingExistence(userId: number) {
     const bookingExists = await bookingRepository.findBooking(userId);
 
     if (!bookingExists) {
-        throw notFoundError();
+        throw cannotBookingError();
     }
 
     return bookingExists;

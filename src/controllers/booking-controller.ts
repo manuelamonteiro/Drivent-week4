@@ -11,8 +11,8 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
         const booking = await bookingService.getBookingService(Number(userId));
         return res.send(httpStatus.OK).send(booking);
     } catch (error) {
-        if (error.name === "NotFoundError") {
-            return res.sendStatus(httpStatus.NOT_FOUND);
+        if (error.name === "CannotBookingError") {
+            return res.sendStatus(httpStatus.FORBIDDEN);
         }
 
         return res.sendStatus(httpStatus.BAD_REQUEST);
@@ -30,10 +30,6 @@ export async function postBooking(req: AuthenticatedRequest, res: Response) {
     } catch (error) {
         if (error.name === "NotFoundError") {
             return res.sendStatus(httpStatus.NOT_FOUND);
-        }
-
-        if (error.name === "CannotListHotelsError") {
-            return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
         }
 
         if (error.name === "CannotBookingError") {
@@ -56,10 +52,6 @@ export async function putBooking(req: AuthenticatedRequest, res: Response) {
     } catch (error) {
         if (error.name === "NotFoundError") {
             return res.sendStatus(httpStatus.NOT_FOUND);
-        }
-
-        if (error.name === "CannotListHotelsError") {
-            return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
         }
 
         if (error.name === "CannotBookingError") {
