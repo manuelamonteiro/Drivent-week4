@@ -3,6 +3,7 @@ import ticketRepository from "@/repositories/ticket-repository";
 import { notFoundError } from "@/errors";
 import { cannotListHotelsError } from "@/errors/cannot-list-hotels-error";
 import bookingRepository from "@/repositories/booking-repository";
+import { cannotBookingError } from "@/errors/cannot-booking-error";
 
 async function getBookingService(userId: number) {
 
@@ -79,7 +80,7 @@ async function validateRoomExistenceAndCapacity(roomId: number) {
     const bookings = await bookingRepository.findManyBookingsByRoom(roomId);
 
     if(bookings.length >= room.capacity){
-        throw {type: "CannotBookingError"}
+        throw cannotBookingError();
     }
 
 }
