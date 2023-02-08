@@ -36,6 +36,10 @@ export async function postBooking(req: AuthenticatedRequest, res: Response) {
             return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
         }
 
+        if (error.name === "CannotBookingError") {
+            return res.sendStatus(httpStatus.FORBIDDEN);
+        }
+
         return res.sendStatus(httpStatus.FORBIDDEN);
     }
 }
@@ -56,6 +60,10 @@ export async function putBooking(req: AuthenticatedRequest, res: Response) {
 
         if (error.name === "CannotListHotelsError") {
             return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+        }
+
+        if (error.name === "CannotBookingError") {
+            return res.sendStatus(httpStatus.FORBIDDEN);
         }
 
         return res.sendStatus(httpStatus.FORBIDDEN);
