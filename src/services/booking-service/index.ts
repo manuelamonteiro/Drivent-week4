@@ -10,14 +10,14 @@ async function getBookingService(userId: number) {
 
     const bookingExists = await validateBookingExistence(userId);   
 
-    return bookingExists;
+    return {id: bookingExists.id, Room: bookingExists.Room};
 
 }
 
 async function postBookingService(userId: number, roomId: number) {
 
     await validateTicket(userId);
-    // await validateRoomExistenceAndCapacity(roomId);
+    await validateRoomExistenceAndCapacity(roomId);
 
     const booking = await bookingRepository.createBooking(userId, roomId);
 
@@ -28,7 +28,7 @@ async function putBookingService(userId: number, bookingId: number, roomId: numb
 
     await validateTicket(userId);
     await validateBookingExistence(userId);   
-    // await validateRoomExistenceAndCapacity(roomId);
+    await validateRoomExistenceAndCapacity(roomId);
 
     const booking = await bookingRepository.updateBooking(bookingId, roomId);
 
@@ -63,16 +63,16 @@ async function validateBookingExistence(userId: number) {
     
     const bookingExists = await bookingRepository.findBooking(userId);
 
-    if (!bookingExists) {
-        throw cannotBookingError();
-    }
+    if (!bookingExists || bookingExists.userId !== userId) {
+        throw notFoundError();
+      }
 
     return bookingExists;
 
 }
 
 async function validateRoomExistenceAndCapacity(roomId: number) {
-    
+
     const room = await bookingRepository.findRoom(roomId);
 
     if (!room) {
