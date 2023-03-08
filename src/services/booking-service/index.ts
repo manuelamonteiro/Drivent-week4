@@ -8,9 +8,9 @@ async function getBookingService(userId: number) {
 
     await validateEnrollment(userId);
 
-    const bookingExists = await validateBookingExistence(userId);   
+    const bookingExists = await validateBookingExistence(userId);
 
-    return {id: bookingExists.id, Room: bookingExists.Room};
+    return { id: bookingExists.id, Room: bookingExists.Room };
 
 }
 
@@ -27,7 +27,7 @@ async function postBookingService(userId: number, roomId: number) {
 async function putBookingService(userId: number, bookingId: number, roomId: number) {
 
     await validateTicket(userId);
-    await validateBookingExistence(userId);   
+    await validateBookingExistence(userId);
     await validateRoomExistenceAndCapacity(roomId);
 
     const booking = await bookingRepository.updateBooking(bookingId, roomId);
@@ -37,9 +37,9 @@ async function putBookingService(userId: number, bookingId: number, roomId: numb
 }
 
 async function validateEnrollment(userId: number) {
-    
+
     const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-    
+
     if (!enrollment) {
         throw cannotBookingError();
     }
@@ -47,7 +47,7 @@ async function validateEnrollment(userId: number) {
     return enrollment;
 }
 
-async function validateTicket(userId: number){
+async function validateTicket(userId: number) {
 
     const enrollment = await validateEnrollment(userId);
 
@@ -60,12 +60,12 @@ async function validateTicket(userId: number){
 }
 
 async function validateBookingExistence(userId: number) {
-    
+
     const bookingExists = await bookingRepository.findBooking(userId);
 
     if (!bookingExists || bookingExists.userId !== userId) {
         throw notFoundError();
-      }
+    }
 
     return bookingExists;
 
@@ -81,7 +81,7 @@ async function validateRoomExistenceAndCapacity(roomId: number) {
 
     const bookings = await bookingRepository.findManyBookingsByRoom(roomId);
 
-    if(bookings.length >= room.capacity){
+    if (bookings.length >= room.capacity) {
         throw cannotBookingError();
     }
 

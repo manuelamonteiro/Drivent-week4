@@ -50,7 +50,7 @@ export async function putBooking(req: AuthenticatedRequest, res: Response) {
     const { bookingId } = req.params;
     const { roomId } = req.body;
 
-    if(!roomId || roomId < 1){
+    if (!roomId || roomId < 1) {
         res.sendStatus(httpStatus.NOT_FOUND);
     }
 

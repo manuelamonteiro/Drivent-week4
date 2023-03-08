@@ -20,9 +20,9 @@ async function createBooking(userId: number, roomId: number) {
     });
 }
 
-async function updateBooking(bookingId:number, roomId: number) {
+async function updateBooking(bookingId: number, roomId: number) {
     return prisma.booking.update({
-        where:{
+        where: {
             id: bookingId
         },
         data: {
@@ -33,7 +33,7 @@ async function updateBooking(bookingId:number, roomId: number) {
 
 async function findRoom(roomId: number) {
     return prisma.room.findFirst({
-        where:{
+        where: {
             id: roomId
         }
     })
@@ -41,7 +41,7 @@ async function findRoom(roomId: number) {
 
 async function findManyBookingsByRoom(roomId: number) {
     return prisma.booking.findMany({
-        where:{
+        where: {
             roomId
         }
     })
